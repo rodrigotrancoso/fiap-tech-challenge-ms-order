@@ -2,12 +2,10 @@ name: Build Project And Push Docker Image
 
 on:
   pull_request:
-    paths-ignore:
-      - '.github/**'
-      - 'README.md'
-      - '.gitignore'
+    paths:
+      - 'src/**'
+      - 'index.js'
       - 'Dockerfile'
-      - 'k8s/**'
     branches:
       - master
 
@@ -15,28 +13,29 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - name: Obter o código do projeto
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Configurar o ambiente
-        uses: actions/setup-node@v4
+      - name: Jest coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          node-version: 22.x
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-      - uses: ArtiomTr/jest-coverage-report-action@v2
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Autenticar no Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Contrução da imagem Docker
+      - name: Build and push image to Amazon ECR
         uses: docker/build-push-action@v6
         with:
           context: ./
           push: true
           file: ./Dockerfile
           tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/fiap-tech-challenge-ms-order:${{ vars.DOCKER_IMAGE_VERSION }}
-            ${{ vars.DOCKERHUB_USERNAME }}/fiap-tech-challenge-ms-order:latest
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:latest
