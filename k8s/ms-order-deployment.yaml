@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: ms-order
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: ms-order
@@ -23,7 +23,10 @@ spec:
             - containerPort: 3000
           env:
             - name: MONGO_URI
-              value: ${MONGO_URI}
+              valueFrom:
+                secretKeyRef:
+                  name: ms-order-secret
+                  key: mongo_uri
 ---
 apiVersion: v1
 kind: Service
