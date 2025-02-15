@@ -48,7 +48,11 @@ const OrderService = {
       // Using the internal k8s service DNS
       const response = await fetch(`http://ms-product:8080/api/v1/products/${productId}`);
       if (!response.ok) {
-        throw new Error(`Failed to fetch product details for ID: ${productId}`);
+        const error = new Error(`Failed to fetch product details for ID: ${productId}`);
+        if (response.status === 404) {
+          error.statusCode = 404;
+        }
+        throw error;
       }
       return await response.json();
     } catch (error) {
