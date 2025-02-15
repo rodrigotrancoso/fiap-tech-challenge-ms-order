@@ -2,12 +2,10 @@ name: Build Project And Push Docker Image
 
 on:
   pull_request:
-    paths-ignore:
-      - '.github/**'
-      - 'README.md'
-      - '.gitignore'
+    paths:
+      - 'src/**'
+      - 'index.js'
       - 'Dockerfile'
-      - 'k8s/**'
     branches:
       - master
 
