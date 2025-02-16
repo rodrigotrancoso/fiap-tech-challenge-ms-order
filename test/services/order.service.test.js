@@ -88,21 +88,21 @@ describe('OrderService', () => {
 
             const result = await OrderService.fetchProductDetails(productId);
             expect(result).toEqual(productDetailsMock);
-            expect(fetch).toHaveBeenCalledWith(`http://ms-product:8080/api/v1/products/${productId}`);
+            expect(fetch).toHaveBeenCalledWith(`http://ms-product/api/v1/products/${productId}`);
         });
 
         it('should throw an error when product is not found (404)', async () => {
             global.fetch = jest.fn().mockResolvedValue(new Response(null, { status: 404 }));
 
             await expect(OrderService.fetchProductDetails(productId)).rejects.toThrow(`Failed to fetch product details for ID: ${productId}`);
-            expect(fetch).toHaveBeenCalledWith(`http://ms-product:8080/api/v1/products/${productId}`);
+            expect(fetch).toHaveBeenCalledWith(`http://ms-product/api/v1/products/${productId}`);
         });
 
         it('should throw an error when fetch fails (network issue)', async () => {
             global.fetch = jest.fn().mockRejectedValue(new Error('Network Error'));
 
             await expect(OrderService.fetchProductDetails(productId)).rejects.toThrow('Network Error');
-            expect(fetch).toHaveBeenCalledWith(`http://ms-product:8080/api/v1/products/${productId}`);
+            expect(fetch).toHaveBeenCalledWith(`http://ms-product/api/v1/products/${productId}`);
         });
     });
 });
