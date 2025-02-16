@@ -31,17 +31,10 @@ jobs:
       - name: Configure kubectl
         run: aws eks update-kubeconfig --name ${{ vars.K8S_CLUSTER_NAME }} --region ${{ vars.AWS_REGION }}
 
-      - name: Replace secrets in deployment
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-        run: |
-          sed -i "s|\${MONGO_URI}|$MONGO_URI|g" k8s/secrets.yaml
-
       - name: Deploy to Kubernetes
         uses: Azure/k8s-deploy@v5
         with:
           manifests: |
-            ./k8s/secrets.yaml
             ./k8s/ms-order-deployment.yaml
             ./k8s/hpa.yaml
           images: |

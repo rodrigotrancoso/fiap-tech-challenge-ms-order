@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: ms-order
-          image: RaildoBru/fiap-tech-challenge-order
+          image: rodrigotrancoso/fiap-tech-challenge-ms-order
           resources:
             limits:
               memory: "128Mi"
@@ -41,5 +41,5 @@ spec:
   selector:
     app: ms-order
   ports:
-    - port: 8080
+    - port: 80
       targetPort: 3000
