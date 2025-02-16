@@ -43,7 +43,7 @@ describe('OrderService', () => {
                 { customerId: '456', items: [], totalPrice: 0 }
             ];
 
-            Order.find.mockResolvedValue(orders);
+            Order.findAll.mockResolvedValue(orders);
 
             const result = await OrderService.getOrders();
 
@@ -70,7 +70,7 @@ describe('OrderService', () => {
             const status = 'DELIVERED';
             const order = { customerId: '123', items: [], totalPrice: 0 };
 
-            Order.findByIdAndUpdate.mockResolvedValue(order);
+            Order.updateStatus.mockResolvedValue(order);
 
             const result = await OrderService.updateOrderStatus(id, status);
 

@@ -1,29 +1,75 @@
-import mongoose from 'mongoose';
+import { PutCommand, GetCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { v4 as uuidv4 } from "uuid";
+import connectDB from "../../config/database.js";
 
-const OrderSchema = new mongoose.Schema(
-    {
-        customerId: { type: String, required: false },
-        items: [
-            {
-                productId: { type: String, required: true },
-                name: String,
-                price: Number,
-                description: String,
-                category: {
-                    type: String,
-                    enum: ["Food", "Beverage", "Snack", "Dessert"],
-                },
-                quantity: { type: Number, required: true },
+class Order {
+    constructor() {
+        this.tableName = "orders";
+    }
+
+    async create(orderData) {
+        const docClient = await connectDB();
+        const timestamp = new Date().toISOString();
+
+        const order = {
+            orderId: uuidv4(), // Create a unique ID
+            customerId: orderData.customerId || null,
+            items: orderData.items,
+            totalPrice: orderData.totalPrice,
+            status: "PENDING",
+            createdAt: timestamp,
+            updatedAt: timestamp
+        };
+
+        const command = new PutCommand({
+            TableName: this.tableName,
+            Item: order
+        });
+
+        await docClient.send(command);
+        return order;
+    }
+
+    async findById(orderId) {
+        const docClient = await connectDB();
+        const command = new GetCommand({
+            TableName: this.tableName,
+            Key: { orderId }
+        });
+
+        const response = await docClient.send(command);
+        return response.Item;
+    }
+
+    async updateStatus(orderId, status) {
+        const docClient = await connectDB();
+        const command = new UpdateCommand({
+            TableName: this.tableName,
+            Key: { orderId },
+            UpdateExpression: "set #status = :status, updatedAt = :updatedAt",
+            ExpressionAttributeNames: {
+                "#status": "status"
             },
-        ],
-        totalPrice: { type: Number, required: true },
-        status: { type: String, required: true, default: "PENDING" },
-        createdAt: { type: Date, required: true, default: Date.now },
-        updatedAt: { type: Date, required: true, default: Date.now }
-    }, { collection: 'orders' }
-);
+            ExpressionAttributeValues: {
+                ":status": status,
+                ":updatedAt": new Date().toISOString()
+            },
+            ReturnValues: "ALL_NEW"
+        });
 
+        const response = await docClient.send(command);
+        return response.Attributes;
+    }
 
-const Order = mongoose.model("Order", OrderSchema);
+    async findAll() {
+        const docClient = await connectDB();
+        const command = new ScanCommand({
+            TableName: this.tableName,
+        });
 
-export default Order;
+        const response = await docClient.send(command);
+        return response.Items;
+    }
+}
+
+export default new Order();

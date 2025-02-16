@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from "./config/database.js";
 import orderRoutes from "./src/routes/order.routes.js";
 
 dotenv.config();
@@ -18,6 +17,4 @@ app.get("/health-check", (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-connectDB().then(() => {
-  app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
-});
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

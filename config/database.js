@@ -1,14 +1,24 @@
-import mongoose from "mongoose";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB conectado!");
+    const client = new DynamoDBClient({
+      region: process.env.AWS_REGION,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      },
+    });
+
+    const docClient = DynamoDBDocumentClient.from(client);
+    console.log("DynamoDB conectado!");
+    return docClient;
   } catch (error) {
-    console.error("Erro ao conectar ao MongoDB:", error);
+    console.error("Erro ao conectar ao DynamoDB:", error);
     process.exit(1);
   }
 };

@@ -32,7 +32,7 @@ const OrderService = {
   },
 
   getOrders: async () => {
-    return await Order.find();
+    return await Order.findAll();
   },
 
   getOrderById: async (id) => {
@@ -40,7 +40,7 @@ const OrderService = {
   },
 
   updateOrderStatus: async (id, status) => {
-    return await Order.findByIdAndUpdate(id, { status }, { new: true });
+    return await Order.updateStatus(id, { status });
   },
 
   fetchProductDetails: async (productId) => {
