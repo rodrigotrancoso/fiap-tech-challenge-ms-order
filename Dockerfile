@@ -1,18 +1,20 @@
+# Usa a imagem oficial do Node.js 22 (versão slim para reduzir o tamanho)
 FROM node:22-slim
 
 # Define o diretório de trabalho dentro do container
 WORKDIR /usr/src/app
 
-# Copy only package files for dependencies
-COPY package*.json ./
+# Copia apenas os arquivos necessários para instalar as dependências
+COPY package.json package-lock.json ./
 
-# Install production dependencies only
-RUN npm ci --only=production
+# Instala apenas as dependências de produção
+RUN npm ci --omit=dev
 
-# Copy only required directories and files
-COPY index.js .
-COPY src/ src/
-COPY config/ config/
+# Copia apenas o necessário para rodar a aplicação
+COPY . .
+
+# Define a variável de ambiente para produção
+ENV NODE_ENV=production
 
 # Expõe a porta que o serviço irá rodar
 EXPOSE 3000
