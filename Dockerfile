@@ -15,7 +15,7 @@ COPY src/ src/
 COPY config/ config/
 
 # Expõe a porta que o serviço irá rodar
-EXPOSE 3002
+EXPOSE 3000
 
 # Comando para iniciar a aplicação
 CMD ["node", "index.js"]
