@@ -5,6 +5,13 @@ import Order from '../../src/models/order.model';
 jest.mock('../../src/models/order.model');
 
 describe('OrderService', () => {
+    const productId = '12345';
+    const productDetailsMock = {
+        name: 'Test Product',
+        price: 100,
+        description: 'A sample product',
+        category: 'Food'
+    };
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -17,7 +24,8 @@ describe('OrderService', () => {
             ];
             const totalPrice = 40;
 
-            OrderService.fetchProductDetails = jest.fn().mockResolvedValue({ name: 'Product', price: 10, description: 'Description', category: 'Category' });
+            global.fetch = jest.fn().mockResolvedValue(new Response(JSON.stringify(productDetailsMock), { status: 200 }));
+            Response.prototype.json = jest.fn().mockResolvedValue(productDetailsMock);
 
             Order.create.mockResolvedValue({ customerId, items, totalPrice });
 
@@ -35,7 +43,7 @@ describe('OrderService', () => {
                 { customerId: '456', items: [], totalPrice: 0 }
             ];
 
-            Order.find.mockResolvedValue(orders);
+            Order.findAll.mockResolvedValue(orders);
 
             const result = await OrderService.getOrders();
 
@@ -62,7 +70,7 @@ describe('OrderService', () => {
             const status = 'DELIVERED';
             const order = { customerId: '123', items: [], totalPrice: 0 };
 
-            Order.findByIdAndUpdate.mockResolvedValue(order);
+            Order.updateStatus.mockResolvedValue(order);
 
             const result = await OrderService.updateOrderStatus(id, status);
 
@@ -71,46 +79,30 @@ describe('OrderService', () => {
     });
 
     describe('fetchProductDetails', () => {
-        it('should fetch product details', async () => {
-            const productId = '123';
-            const product = { name: 'Product', price: 10, description: 'Description', category: 'Category' };
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
 
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: true,
-                json: jest.fn().mockResolvedValue(product)
-            });
+        it('should return product details when fetch is successful', async () => {
+            global.fetch = jest.fn().mockResolvedValue(new Response(JSON.stringify(productDetailsMock), { status: 200 }));
 
             const result = await OrderService.fetchProductDetails(productId);
-
-            expect(result).toEqual(product);
+            expect(result).toEqual(productDetailsMock);
+            expect(fetch).toHaveBeenCalledWith(`http://ms-product/api/v1/products/${productId}`);
         });
 
-        it('should throw an error when failed to fetch product details', async () => {
-            const productId = '123';
-            const error = new Error('Failed to fetch product details');
+        it('should throw an error when product is not found (404)', async () => {
+            global.fetch = jest.fn().mockResolvedValue(new Response(null, { status: 404 }));
 
-            global.fetch = jest.fn().mockResolvedValue({
-                ok: false
-            });
-
-            try {
-                await OrderService.fetchProductDetails(productId);
-            } catch (e) {
-                expect(e).toEqual(error);
-            }
+            await expect(OrderService.fetchProductDetails(productId)).rejects.toThrow(`Failed to fetch product details for ID: ${productId}`);
+            expect(fetch).toHaveBeenCalledWith(`http://ms-product/api/v1/products/${productId}`);
         });
 
-        it('should handle network errors', async () => {
-            const productId = '123';
-            const networkError = new Error('Network error');
+        it('should throw an error when fetch fails (network issue)', async () => {
+            global.fetch = jest.fn().mockRejectedValue(new Error('Network Error'));
 
-            global.fetch = jest.fn().mockRejectedValue(networkError);
-
-            try {
-                await OrderService.fetchProductDetails(productId);
-            } catch (e) {
-                expect(e).toEqual(error);
-            }
+            await expect(OrderService.fetchProductDetails(productId)).rejects.toThrow('Network Error');
+            expect(fetch).toHaveBeenCalledWith(`http://ms-product/api/v1/products/${productId}`);
         });
     });
 });

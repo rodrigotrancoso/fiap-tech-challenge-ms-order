@@ -42,15 +42,12 @@ const OrderController = {
   updateOrderStatus: async (req, res) => {
     try {
       const { status } = req.body;
-      console.log(status);
-      console.log(Object.values(OrderStatus));
       if (!Object.values(OrderStatus).includes(status) || !status) {
         return res.status(400).json({
           message: "Status inválido",
           validStatus: Object.values(OrderStatus)
         });
       }
-      console.log(req.params.id);
       const updatedOrder = await OrderService.updateOrderStatus(req.params.id, status);
       if (!updatedOrder) return res.status(404).json({ message: "Pedido não encontrado" });
 

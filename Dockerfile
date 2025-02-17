@@ -1,21 +1,21 @@
-# Usa a imagem oficial do Node.js 20
-FROM node:20
+FROM node:22-slim
 
 # Define o diretório de trabalho dentro do container
 WORKDIR /usr/src/app
 
-# Copia os arquivos de dependências
-COPY package.json package-lock.json ./
+# Copy only package files for dependencies
+COPY package*.json ./
 
-# Instala as dependências
-RUN npm install
+# Install production dependencies only
+RUN npm ci --only=production
 
-# Copia todo o código para dentro do container
-COPY . .
+# Copy only required directories and files
+COPY index.js .
+COPY src/ src/
+COPY config/ config/
 
 # Expõe a porta que o serviço irá rodar
-EXPOSE 3000
+EXPOSE 3002
 
 # Comando para iniciar a aplicação
 CMD ["node", "index.js"]
-

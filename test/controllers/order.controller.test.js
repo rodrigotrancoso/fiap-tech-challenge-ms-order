@@ -98,7 +98,7 @@ describe('Order Controller', () => {
             OrderService.getOrders.mockRejectedValue(new Error('Connection failed'));
 
             await OrderController.getOrders(req, res);
-            
+
             expect(res.status).toHaveBeenCalledWith(500);
             expect(res.json).toHaveBeenCalled();
         });
@@ -169,7 +169,7 @@ describe('Order Controller', () => {
                     id: 1
                 },
                 body: {
-                    status: 'DELIVERED'
+                    status: 'PREPARING'
                 }
             };
             const res = {
@@ -190,7 +190,7 @@ describe('Order Controller', () => {
                     id: 1
                 },
                 body: {
-                    status: 'DELIVERED'
+                    status: 'PREPARING'
                 }
             };
             const res = {
@@ -227,7 +227,7 @@ describe('Order Controller', () => {
                     id: 1
                 },
                 body: {
-                    status: 'DELIVERED'
+                    status: 'PREPARING'
                 }
             };
             const res = {

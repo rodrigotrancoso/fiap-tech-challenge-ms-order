@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: ms-order
-          image: RaildoBru/fiap-tech-challenge-order
+          image: rodrigotrancoso/fiap-tech-challenge-ms-order
           resources:
             limits:
               memory: "128Mi"
@@ -27,6 +27,10 @@ spec:
                 secretKeyRef:
                   name: ms-order-secret
                   key: mongo_uri
+          livenessProbe:
+            httpGet:
+              path: /health-check
+              port: 3000
 ---
 apiVersion: v1
 kind: Service
@@ -37,5 +41,5 @@ spec:
   selector:
     app: ms-order
   ports:
-    - port: 8080
+    - port: 80
       targetPort: 3000

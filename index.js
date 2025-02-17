@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from "./config/database.js";
 import orderRoutes from "./src/routes/order.routes.js";
 
 dotenv.config();
@@ -12,8 +11,10 @@ app.use(express.json());
 
 app.use("/api/v1/orders", orderRoutes);
 
+app.get("/health-check", (req, res) => {
+  res.send("Health check passed!");
+});
+
 const PORT = process.env.PORT || 3000;
 
-connectDB().then(() => {
-  app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
-});
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
