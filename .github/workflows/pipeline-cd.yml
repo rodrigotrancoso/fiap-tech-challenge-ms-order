@@ -32,7 +32,7 @@ jobs:
         run: aws eks update-kubeconfig --name ${{ vars.K8S_CLUSTER_NAME }} --region ${{ vars.AWS_REGION }}
 
       - name: Substituir variável no Deployment.yaml
-        run: sed -i 's|\${MS_PRODUCT_URL}|${{ vars.MS_PRODUCT_URL }}|g' ./k8s/deployment.yaml
+        run: sed -i 's|\${MS_PRODUCT_URL}|${{ vars.MS_PRODUCT_URL }}|g' ./k8s/ms-order-deployment.yaml
 
       - name: Deploy to Kubernetes
         uses: Azure/k8s-deploy@v5
