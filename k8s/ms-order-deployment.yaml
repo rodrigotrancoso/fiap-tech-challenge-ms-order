@@ -37,6 +37,9 @@ spec:
                 secretKeyRef:
                   name: ms-order-secret
                   key: aws_secret_access_key
+            - name: MS_PRODUCT_URL
+              value: "${MS_PRODUCT_URL}"
+
           livenessProbe:
             httpGet:
               path: /health-check
