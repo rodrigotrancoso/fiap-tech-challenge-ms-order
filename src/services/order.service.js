@@ -1,4 +1,7 @@
 import Order from '../models/order.model.js';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const OrderService = {
   createOrder: async (customerId, items) => {
@@ -35,7 +38,7 @@ const OrderService = {
   fetchProductDetails: async (productId) => {
     try {
       // Using the internal k8s service DNS
-      const response = await fetch(`http://ms-product/api/v1/products/${productId}`);
+      const response = await fetch(`http://${process.env.MS_PRODUCT_URL}/api/v1/products/${productId}`);
       if (!response.ok) {
         const error = new Error(`Failed to fetch product details for ID: ${productId}`);
         if (response.status === 404) {
