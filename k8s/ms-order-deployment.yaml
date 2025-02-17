@@ -22,6 +22,8 @@ spec:
           ports:
             - containerPort: 3000
           env:
+            - name: PORT
+              value: "3000"
             - name: AWS_REGION
               valueFrom:
                 secretKeyRef:
@@ -39,11 +41,13 @@ spec:
                   key: aws_secret_access_key
             - name: MS_PRODUCT_URL
               value: "${MS_PRODUCT_URL}"
-
           livenessProbe:
             httpGet:
               path: /health-check
               port: 3000
+            initialDelaySeconds: 10 # Aguarde 10s antes da primeira verificação
+            periodSeconds: 5 # Verifica a cada 5s
+            failureThreshold: 5
 ---
 apiVersion: v1
 kind: Service
