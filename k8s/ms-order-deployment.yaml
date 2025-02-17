@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: ms-order
-          image: rodrigotrancoso/fiap-tech-challenge-ms-order
+          image: 640168416591.dkr.ecr.us-east-1.amazonaws.com/fastfood/ms-order:latest
           resources:
             limits:
               memory: "128Mi"

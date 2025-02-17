@@ -39,5 +39,4 @@ jobs:
             ./k8s/hpa.yaml
           images: |
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ vars.DOCKER_IMAGE_DEPLOY_VERSION }}
-
-    
+          strategy: basic    
