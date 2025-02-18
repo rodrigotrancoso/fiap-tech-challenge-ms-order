@@ -88,7 +88,7 @@ docker build -t ms-order .
 
 ### **2️⃣ Rodar o Container**
 ```sh
-docker run -p 3003:3003 --env-file .env ms-order
+docker run -p 3000:3000 --env-file .env ms-order
 ```
 
 ---
